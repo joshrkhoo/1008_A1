@@ -12,19 +12,32 @@ class MonsterBase(abc.ABC):
         :simple_mode: Whether to use the simple or complex stats of this monster
         :level: The starting level of this monster. Defaults to 1.
         """
-        raise NotImplementedError
+        
+        self.simple_mode = simple_mode
+        self.level = level
+
+        if self.simple_mode:
+            self.stats = self.get_simple_stats()
+            self.attack = self.stats.get_attack()
+            self.defense = self.stats.get_defense()
+            self.speed = self.stats.get_speed()
+            self.hp = self.stats.get_max_hp()
+        
+        # TODO: complex stats
 
     def get_level(self):
         """The current level of this monster instance"""
-        raise NotImplementedError
+        return self.level
 
     def level_up(self):
         """Increase the level of this monster instance by 1"""
-        raise NotImplementedError
+        if self.simple_mode:
+            return
+        self.level = self.level + 1
 
     def get_hp(self):
         """Get the current HP of this monster instance"""
-        raise NotImplementedError
+        return self.hp
 
     def set_hp(self, val):
         """Set the current HP of this monster instance"""
@@ -44,7 +57,7 @@ class MonsterBase(abc.ABC):
 
     def get_max_hp(self):
         """Get the maximum HP of this monster instance"""
-        raise NotImplementedError
+        return self.stats.get_max_hp()
 
     def alive(self) -> bool:
         """Whether the current monster instance is alive (HP > 0 )"""
