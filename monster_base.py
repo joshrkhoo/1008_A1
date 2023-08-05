@@ -16,15 +16,17 @@ class MonsterBase(abc.ABC):
         self.simple_mode = simple_mode
         self.level = level
 
+        # if we are in simple mode then we use simplestats
         if self.simple_mode:
             self.stats = self.get_simple_stats()
             self.attack = self.stats.get_attack()
             self.defense = self.stats.get_defense()
             self.speed = self.stats.get_speed()
             self.hp = self.stats.get_max_hp()
-            self.current_hp = self.get_hp()
         
-        # TODO: complex stats
+        # otherwise we use complexstats
+        else:
+            self.stats = self.get_complex_stats()
 
     def get_level(self):
         """The current level of this monster instance"""
@@ -38,32 +40,41 @@ class MonsterBase(abc.ABC):
 
     def get_hp(self):
         """Get the current HP of this monster instance"""
+        # here we just return self.hp because this one is dynamic (it changes depending if it loses hp or not)
         return self.hp
 
     def set_hp(self, val):
         """Set the current HP of this monster instance"""
-        raise NotImplementedError
+
+        #we just set the hp to the value passed in
+        self.hp = val
 
     def get_attack(self):
         """Get the attack of this monster instance"""
-        raise NotImplementedError
+        return self.attack
 
     def get_defense(self):
         """Get the defense of this monster instance"""
-        raise NotImplementedError
+        return self.defense
 
     def get_speed(self):
         """Get the speed of this monster instance"""
-        raise NotImplementedError
+        return self.speed
 
     def get_max_hp(self):
         """Get the maximum HP of this monster instance"""
-        return self.stats.get_max_hp()
 
+        # we call the stats.get_max_hp() method as it is always the same for that monster instance
+        return self.stats.get_max_hp()
+    
     def alive(self) -> bool:
-        """Whether the current monster instance is alive (HP > 0 )"""
+        """Whether this monster instance is alive"""
+        # if the current hp is greater than 0 then the monster is alive
         if self.hp > 0:
             return True
+        else:
+            return False
+
 
     def attack(self, other: MonsterBase):
         """Attack another monster instance"""
@@ -71,15 +82,29 @@ class MonsterBase(abc.ABC):
         # Step 2: Apply type effectiveness
         # Step 3: Ceil to int
         # Step 4: Lose HP
-        raise NotImplementedError
+        
+
 
     def ready_to_evolve(self) -> bool:
         """Whether this monster is ready to evolve. See assignment spec for specific logic."""
-        raise NotImplementedError
+
+        if self.get_evolution() is not None and self.level != 1:
+            return True
+        else:
+            return False
+        
 
     def evolve(self) -> MonsterBase:
         """Evolve this monster instance by returning a new instance of a monster class."""
-        raise NotImplementedError
+
+        if self.ready_to_evolve():
+            return self.get_evolution()
+        else:
+            return self
+    
+    #method for str(obj)
+    def __str__(self) -> str:
+        return f"LV.{self.get_level()} {self.get_name()}, {self.get_hp()}/{self.get_max_hp()} HP"
 
     ### NOTE
     # Below is provided by the factory - classmethods
