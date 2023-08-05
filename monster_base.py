@@ -22,6 +22,7 @@ class MonsterBase(abc.ABC):
             self.defense = self.stats.get_defense()
             self.speed = self.stats.get_speed()
             self.hp = self.stats.get_max_hp()
+            self.current_hp = self.get_hp()
         
         # TODO: complex stats
 
@@ -61,7 +62,8 @@ class MonsterBase(abc.ABC):
 
     def alive(self) -> bool:
         """Whether the current monster instance is alive (HP > 0 )"""
-        raise NotImplementedError
+        if self.hp > 0:
+            return True
 
     def attack(self, other: MonsterBase):
         """Attack another monster instance"""
