@@ -16,6 +16,9 @@ class MonsterBase(abc.ABC):
         self.simple_mode = simple_mode
         self.level = level
 
+        # set that the monster is not ready to evolve (lvl needs be different to original)
+        self.evolve_ready = False
+
         # if we are in simple mode then we use simplestats
         if self.simple_mode:
             self.stats = self.get_simple_stats()
@@ -27,6 +30,10 @@ class MonsterBase(abc.ABC):
         # otherwise we use complexstats
         else:
             self.stats = self.get_complex_stats()
+            self.attack = self.stats.get_attack()
+            self.defense = self.stats.get_defense()
+            self.speed = self.stats.get_speed()
+            self.hp = self.stats.get_max_hp()
 
     def get_level(self):
         """The current level of this monster instance"""
@@ -34,9 +41,9 @@ class MonsterBase(abc.ABC):
 
     def level_up(self):
         """Increase the level of this monster instance by 1"""
-        if self.simple_mode:
-            return
         self.level = self.level + 1
+        # level changed so 1 requirement of evolution is met
+        self.evolve_ready = True
 
     def get_hp(self):
         """Get the current HP of this monster instance"""
@@ -70,10 +77,8 @@ class MonsterBase(abc.ABC):
     def alive(self) -> bool:
         """Whether this monster instance is alive"""
         # if the current hp is greater than 0 then the monster is alive
-        if self.hp > 0:
-            return True
-        else:
-            return False
+        return self.hp > 0
+  
 
 
     def attack(self, other: MonsterBase):
@@ -88,20 +93,30 @@ class MonsterBase(abc.ABC):
     def ready_to_evolve(self) -> bool:
         """Whether this monster is ready to evolve. See assignment spec for specific logic."""
 
-        if self.get_evolution() is not None and self.level != 1:
-            return True
-        else:
-            return False
+        return self.get_evolution() != None and self.evolve_ready
+    
+
+        # if self.get_evolution() != None and self.evolve_ready is True:
+        #     return True
+        # else:
+        #     return False
         
 
     def evolve(self) -> MonsterBase:
         """Evolve this monster instance by returning a new instance of a monster class."""
-
         if self.ready_to_evolve():
-            return self.get_evolution()
-        else:
-            return self
+            # create new monster class by calling get_evolution()() (extra parethesis to call the class)
+            evolved_monster = self.get_evolution()(
+                simple_mode=self.simple_mode,
+                level=self.level
+            )
+            difference = self.get_max_hp() - self.get_hp()
+            evolved_monster.set_hp(evolved_monster.get_max_hp() - difference)
+            return evolved_monster
+
     
+
+            
     #method for str(obj)
     def __str__(self) -> str:
         return f"LV.{self.get_level()} {self.get_name()}, {self.get_hp()}/{self.get_max_hp()} HP"
