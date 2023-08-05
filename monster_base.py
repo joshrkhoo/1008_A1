@@ -41,7 +41,14 @@ class MonsterBase(abc.ABC):
 
     def level_up(self):
         """Increase the level of this monster instance by 1"""
+
+        difference = self.get_max_hp() - self.get_hp()
+
+
         self.level = self.level + 1
+
+        self.set_hp(self.get_max_hp() - difference)
+
         # level changed so 1 requirement of evolution is met
         self.evolve_ready = True
 
