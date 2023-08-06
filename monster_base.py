@@ -22,18 +22,13 @@ class MonsterBase(abc.ABC):
         # if we are in simple mode then we use simplestats
         if self.simple_mode:
             self.stats = self.get_simple_stats()
-            self.attack = self.stats.get_attack()
-            self.defense = self.stats.get_defense()
-            self.speed = self.stats.get_speed()
-            self.hp = self.stats.get_max_hp()
         
         # otherwise we use complexstats
         else:
             self.stats = self.get_complex_stats()
-            self.attack = self.stats.get_attack()
-            self.defense = self.stats.get_defense()
-            self.speed = self.stats.get_speed()
-            self.hp = self.stats.get_max_hp()
+
+        # set the current hp to the max hp (this hp will change when the monster loses hp)
+        self.hp = self.get_max_hp()
 
     def get_level(self):
         """The current level of this monster instance"""
@@ -54,7 +49,9 @@ class MonsterBase(abc.ABC):
 
     def get_hp(self):
         """Get the current HP of this monster instance"""
-        # here we just return self.hp because this one is dynamic (it changes depending if it loses hp or not)
+
+        # here we just return self.hp because this one is dynamic (it changes depending if it loses hp or not) 
+        # As assigned in init
         return self.hp
 
     def set_hp(self, val):
@@ -65,15 +62,15 @@ class MonsterBase(abc.ABC):
 
     def get_attack(self):
         """Get the attack of this monster instance"""
-        return self.attack
+        return self.stats.get_attack()
 
     def get_defense(self):
         """Get the defense of this monster instance"""
-        return self.defense
+        return self.stats.get_defense()
 
     def get_speed(self):
         """Get the speed of this monster instance"""
-        return self.speed
+        return self.stats.get_speed()
 
     def get_max_hp(self):
         """Get the maximum HP of this monster instance"""
