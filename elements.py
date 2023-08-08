@@ -56,6 +56,8 @@ class EffectivenessCalculator:
         EffectivenessCalculator.get_effectiveness(elem1, elem2)
     """
 
+    # Optional[EffectivenessCalculator] is a type hint that says that this variable can be either None or an EffectivenessCalculator
+    # instance is a class variable that stores the singleton instance of EffectivenessCalculator
     instance: Optional[EffectivenessCalculator] = None
 
     def __init__(self, element_names: ArrayR[str], effectiveness_values: ArrayR[float]) -> None:
@@ -75,7 +77,12 @@ class EffectivenessCalculator:
         Water is double effective to Fire, and half effective to Water and Grass [2, 0.5, 0.5]
         Grass is half effective to Fire and Grass, and double effective to Water [0.5, 2, 0.5]
         """
-        raise NotImplementedError
+
+        #ArrayR of size n containing all element_names
+        self.element_names = element_names
+
+        #ArrayR of size n*n, containing all effectiveness values
+        self.effectiveness_values = effectiveness_values
 
     @classmethod
     def get_effectiveness(cls, type1: Element, type2: Element) -> float:
@@ -84,12 +91,57 @@ class EffectivenessCalculator:
 
         Example: EffectivenessCalculator.get_effectiveness(Element.FIRE, Element.WATER) == 0.5
         """
-        raise NotImplementedError
+
+        # What is instance? 
+            # It is the only EffectivenessCalculator object, which has two attributes: element_names and effectiveness_values
+            # element_names is an ArrayR of size n containing all element_names
+            # effectiveness_values is an ArrayR of size n*n, containing all effectiveness values
+
+        # The effectiveness_values array is a 2D array... we need to convert it into a 1D array using the formula: row * num_cols + col
+            # This allows us to get the index of the effectiveness value directly without having to loop through the array
+
+        # The time complexity of this function is O(1) 
+            # This is because we are getting the effectiveness value by index directly
+                # This is done by using mathematical operations which are all O(1) time complexity
+                # There are no loops and thus no O(n) time complexity where n is the number of elements in the array
+
+
+        
+        # Assigning cls.instance to a variable called instance
+            # This allows us to access the instance/object of EffectivenessCalculator
+            # cls.instance is an object with two attributes: element_names and effectiveness_values that are managed in the from_csv function
+        instance = cls.instance
+
+        # Here we are getting the array of effectives values from the instance variable
+        effectiveness_values = instance.effectiveness_values
+
+        # Here we are getting the index of the effectiveness value of type1 attacking type2 in the effectiveness_values array
+            # This is done by using the formula: row * num_cols + col
+            # .value returns the index of the element
+        index_of_effectiveness_value = type1.value * len(instance.element_names) + type2.value
+
+        # Here we are getting the effectiveness value by index
+        effectiveness = effectiveness_values[index_of_effectiveness_value]
+
+        return effectiveness
+
+        # Alternative solution: (less readable)
+        # effectiveness = cls.instance.effectiveness_values[type1.value * len(cls.instance.element_names) + type2.value]
+
+
+        
+
 
     @classmethod
     def from_csv(cls, csv_file: str) -> EffectivenessCalculator:
         # NOTE: This is a terrible way to open csv files, if writing your own code use the `csv` module.
         # This is done this way to facilitate the second half of the task, the __init__ definition.
+
+        """
+        This function is basically spliting the csv file into two parts: header and rest
+        header is the first line of the csv file (the element names)
+        rest is the rest of the csv file (the effectiveness values)
+        """
         with open(csv_file, "r") as file:
             header, rest = file.read().strip().split("\n", maxsplit=1)
             header = header.split(",")
@@ -101,7 +153,9 @@ class EffectivenessCalculator:
             for i in range(len(rest)):
                 a_all[i] = float(rest[i])
             return EffectivenessCalculator(a_header, a_all)
+        
 
+    # Over here we just make an instance of the class where it has the element names and effectiveness values as attributes
     @classmethod
     def make_singleton(cls):
         cls.instance = EffectivenessCalculator.from_csv("type_effectiveness.csv")
@@ -110,4 +164,4 @@ EffectivenessCalculator.make_singleton()
 
 
 if __name__ == "__main__":
-    print(EffectivenessCalculator.get_effectiveness(Element.FIRE, Element.WATER))
+    print(EffectivenessCalculator.get_effectiveness(Element.ELECTRIC, Element.WATER))
