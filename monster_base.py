@@ -20,7 +20,7 @@ class MonsterBase(abc.ABC):
         self.evolve_ready = False
 
         # if we are in simple mode then we use simplestats
-        if self.simple_mode:
+        if simple_mode:
             self.stats = self.get_simple_stats()
         
         # otherwise we use complexstats
@@ -28,6 +28,8 @@ class MonsterBase(abc.ABC):
             self.stats = self.get_complex_stats()
 
         # set the current hp to the max hp (this hp will change when the monster loses hp)
+        # we dont call stats because there may be new monsters created that are not in the stats file
+            # this could be child classes (variations of the same monster / parent class)
         self.hp = self.get_max_hp()
 
     def get_level(self):
