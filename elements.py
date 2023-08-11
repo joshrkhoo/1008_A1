@@ -142,6 +142,7 @@ class EffectivenessCalculator:
         header is the first line of the csv file (the element names)
         rest is the rest of the csv file (the effectiveness values)
         """
+        
         with open(csv_file, "r") as file:
             header, rest = file.read().strip().split("\n", maxsplit=1)
             header = header.split(",")
