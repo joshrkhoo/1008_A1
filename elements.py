@@ -100,10 +100,13 @@ class EffectivenessCalculator:
         # The effectiveness_values array is a 2D array... we need to convert it into a 1D array using the formula: row * num_cols + col
             # This allows us to get the index of the effectiveness value directly without having to loop through the array
 
+
+        ####### COMPLEXITY ANALYSIS #######
         # The time complexity of this function is O(1) 
             # This is because we are getting the effectiveness value by index directly
-                # This is done by using mathematical operations which are all O(1) time complexity
-                # There are no loops and thus no O(n) time complexity where n is the number of elements in the array
+                # The calculation is done by using mathematical operations which are all O(1) time complexity
+                # There are no loops to iterate through and thus no O(n) time complexity where n would be the number of elements in the array of effectiveness values
+        ####### COMPLEXITY ANALYSIS #######
 
 
         
@@ -118,6 +121,7 @@ class EffectivenessCalculator:
         # Here we are getting the index of the effectiveness value of type1 attacking type2 in the effectiveness_values array
             # This is done by using the formula: row * num_cols + col
             # .value returns the index of the element
+                # this method comes from the BaseEnum class which is a child class of Enum 
         index_of_effectiveness_value = type1.value * len(instance.element_names) + type2.value
 
         # Here we are getting the effectiveness value by index
