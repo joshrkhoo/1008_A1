@@ -20,13 +20,13 @@ class Element(BaseEnum):
     ```
     """
 
-    FIRE = auto()
-    WATER = auto()
-    GRASS = auto()
-    BUG = auto()
-    DRAGON = auto()
-    ELECTRIC = auto()
-    FIGHTING = auto()
+    FIRE = auto() #1
+    WATER = auto() #2
+    GRASS = auto() #3
+    BUG = auto() #4
+    DRAGON = auto() #5
+    ELECTRIC = auto() #6
+    FIGHTING = auto() #7
     FLYING = auto()
     GHOST = auto()
     GROUND = auto()
@@ -78,11 +78,32 @@ class EffectivenessCalculator:
         Grass is half effective to Fire and Grass, and double effective to Water [0.5, 2, 0.5]
         """
 
+
         #ArrayR of size n containing all element_names
         self.element_names = element_names
 
         #ArrayR of size n*n, containing all effectiveness values
         self.effectiveness_values = effectiveness_values
+
+
+
+                                        ##### COMPLEXITY ANALYSIS #####
+        # The time complexity of the map below is O(n) where n is the number of elements in the element_names array
+        # This complexity however will occur ONCE AND ONLY ONCE as we are essentially creating a map that maps the index of the element to the index of the effectivenes which allows the get_effectiveness function to be O(1) time complexity (see below for more details)
+                                        ##### COMPLEXITY ANALYSIS #####
+
+
+        print(self.element_names, effectiveness_values)
+    
+        # This is a map that maps the index of the element to the index of the effectiveness value
+        # [element enum value] -> [index of element name value in element_names array]
+        self.element_index_map = ArrayR(len(self.element_names))
+        for i in range(len(self.element_names)):
+
+            # set the index of the element to the index of the element name in the element_names array
+                # this is done by the from_string method which returns the element enum value
+            self.element_index_map[Element.from_string(self.element_names[i]).value-1] = i
+        print(self.element_index_map)
 
     @classmethod
     def get_effectiveness(cls, type1: Element, type2: Element) -> float:
@@ -115,25 +136,22 @@ class EffectivenessCalculator:
             # cls.instance is an object with two attributes: element_names and effectiveness_values that are managed in the from_csv function
         instance = cls.instance
 
-        # Here we are getting the array of effectives values from the instance variable
+        # # Here we are getting the array of effectives values from the instance variable
         effectiveness_values = instance.effectiveness_values
 
-        # Here we are getting the index of the effectiveness value of type1 attacking type2 in the effectiveness_values array
-            # This is done by using the formula: row * num_cols + col
-            # .value returns the index of the element
-                # this method comes from the BaseEnum class which is a child class of Enum 
-        index_of_effectiveness_value = type1.value * len(instance.element_names) + type2.value
+        # # Here we are getting the index of the effectiveness value of type1 attacking type2 in the effectiveness_values array
+        #     # This is done by using the formula: row * num_cols + col
+        #     # .value returns the index of the element
+        #         # this method comes from the BaseEnum class which is a child class of Enum 
+        index_of_effectiveness_value = instance.element_index_map[type1.value-1] * len(instance.element_names) + instance.element_index_map[type2.value-1]
+        # index_of_effectiveness_value = type1.value * len(instance.element_names) + type2.value
 
-        # Here we are getting the effectiveness value by index
+
+        # # Here we are getting the effectiveness value by index
         effectiveness = effectiveness_values[index_of_effectiveness_value]
+        print(len(instance.element_names), type1, type2, type1.value, type2.value, instance.element_index_map[type1.value-1], instance.element_index_map[type2.value-1], index_of_effectiveness_value, effectiveness)
 
         return effectiveness
-
-        # Alternative solution: (less readable)
-        # effectiveness = cls.instance.effectiveness_values[type1.value * len(cls.instance.element_names) + type2.value]
-
-
-        
 
 
     @classmethod
