@@ -7,7 +7,12 @@ from monster_base import MonsterBase
 from random_gen import RandomGen
 from helpers import get_all_monsters
 
-from data_structures.referential_array import ArrayR
+# for back team
+from data_structures.queue_adt import Queue, CircularQueue
+# for optimised team
+from data_structures.array_sorted_list import ArraySortedList
+# for front team
+from data_structures.stack_adt import ArrayStack as Stack
 
 if TYPE_CHECKING:
     from battle import Battle
@@ -37,7 +42,11 @@ class MonsterTeam:
     TEAM_LIMIT = 6
 
     def __init__(self, team_mode: TeamMode, selection_mode, **kwargs) -> None:
-        # Add any preinit logic here.
+        self.front_team = Stack(self.TEAM_LIMIT)
+        self.back_team = CircularQueue(self.TEAM_LIMIT)
+        self.optimised_team = ArraySortedList(self.TEAM_LIMIT)
+
+
         self.team_mode = team_mode
         if selection_mode == self.SelectionMode.RANDOM:
             self.select_randomly(**kwargs)
@@ -49,13 +58,54 @@ class MonsterTeam:
             raise ValueError(f"selection_mode {selection_mode} not supported.")
 
     def add_to_team(self, monster: MonsterBase):
-        raise NotImplementedError
+        if self.TeamMode.FRONT:
+            self.front_team.push(monster)
+        elif self.TeamMode.BACK:
+            self.back_team.append(monster)
+        elif self.TeamMode.OPTIMISE:
+            # it is added in the position which maintains the sorted order descending with respect to a particular stat, which is provided at initialisation.
+            if self.SortMode.HP:
+                self.optimised_team.add(monster, lambda x: x.get_hp())
+            elif self.SortMode.ATTACK:
+                self.optimised_team.add(monster, lambda x: x.get_attack())
+            elif self.SortMode.DEFENSE:
+                self.optimised_team.add(monster, lambda x: x.get_defense())
+            elif self.SortMode.SPEED:
+                self.optimised_team.add(monster, lambda x: x.get_speed())
+            elif self.SortMode.LEVEL:
+                self.optimised_team.add(monster, lambda x: x.get_level())
+    
+
+        
 
     def retrieve_from_team(self) -> MonsterBase:
-        raise NotImplementedError
+        if self.TeamMode.FRONT:
+            return self.front_team.pop()
+        elif self.TeamMode.BACK:
+            return self.back_team.serve()
+        elif self.TeamMode.OPTIMISE:
+            return self.optimised_team.delete_at_index(0)
+    
 
     def special(self) -> None:
-        raise NotImplementedError
+        if self.TeamMode.FRONT:
+            # first 3 monsters at the front are reversed up to the current capacity of the stack
+            # creating a temp stack to store popped monsters
+            temp_stack = Stack(self.TEAM_LIMIT)
+            if len(self.front_team) >= 3:
+                for _ in range(3):
+                    temp_stack.push(self.front_team.pop())
+                while not temp_stack.is_empty():
+                    self.front_team.push(temp_stack.pop())
+            elif len(self.front_team) == 2:
+                for _ in range(2):
+                    temp_stack.push(self.front_team.pop())
+                while not temp_stack.is_empty():
+                    self.front_team.push(temp_stack.pop())
+            else:
+                pass
+    
+
 
     def regenerate_team(self) -> None:
         raise NotImplementedError
@@ -80,6 +130,8 @@ class MonsterTeam:
                         break
             else:
                 raise ValueError("Spawning logic failed.")
+            
+    
 
     def select_manually(self):
         """
@@ -188,7 +240,7 @@ class MonsterTeam:
         """
         raise NotImplementedError
 
-    def select_provided(self, provided_monsters:Optional[ArrayR[type[MonsterBase]]]=None):
+    def select_provided(self, provided_monsters: Optional[ArrayR[type[MonsterBase]]]=None):
         """
         Generates a team based on a list of already provided monster classes.
 
@@ -201,6 +253,15 @@ class MonsterTeam:
         Example team if in TeamMode.FRONT:
         [Gustwing Instance, Aquariuma Instance, Flamikin Instance]
         """
+        
+        if provided_monsters is None:
+            raise ValueError("provided_monsters cannot be None.")
+        for monster in provided_monsters:
+            self.add_to_team(monster())
+
+    
+    
+    def __len__(self) -> int:
         raise NotImplementedError
 
     def choose_action(self, currently_out: MonsterBase, enemy: MonsterBase) -> Battle.Action:

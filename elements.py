@@ -101,7 +101,7 @@ class EffectivenessCalculator:
                                         ##### COMPLEXITY ANALYSIS #####
 
 
-        print(self.element_names, effectiveness_values)
+        # print(self.element_names, effectiveness_values)
     
         # This is a map that maps the index of the element to the index of the effectiveness value
         # [element enum value] -> [index of element name value in element_names array]
@@ -111,7 +111,7 @@ class EffectivenessCalculator:
             # set the index of the element to the index of the element name in the element_names array
                 # this is done by the from_string method which returns the element enum value
             self.element_index_map[Element.from_string(self.element_names[i]).value-1] = i
-        print(self.element_index_map)
+        # print(self.element_index_map)
 
     @classmethod
     def get_effectiveness(cls, type1: Element, type2: Element) -> float:
@@ -157,7 +157,7 @@ class EffectivenessCalculator:
 
         # # Here we are getting the effectiveness value by index
         effectiveness = effectiveness_values[index_of_effectiveness_value]
-        print(len(instance.element_names), type1, type2, type1.value, type2.value, instance.element_index_map[type1.value-1], instance.element_index_map[type2.value-1], index_of_effectiveness_value, effectiveness)
+        # print(len(instance.element_names), type1, type2, type1.value, type2.value, instance.element_index_map[type1.value-1], instance.element_index_map[type2.value-1], index_of_effectiveness_value, effectiveness)
 
         return effectiveness
 
