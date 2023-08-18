@@ -56,6 +56,18 @@ class MonsterTeam:
             self.select_provided(**kwargs)
         else:
             raise ValueError(f"selection_mode {selection_mode} not supported.")
+        
+
+    def __len__(self) -> int:
+        raise NotImplementedError
+    
+
+    def print_team(self) -> None:
+        if self.TeamMode.FRONT:
+            while not self.front_team.is_empty():
+                self.front_team.peek()
+                self.front_team.pop() 
+
 
     def add_to_team(self, monster: MonsterBase):
         if self.TeamMode.FRONT:
@@ -95,16 +107,6 @@ class MonsterTeam:
             if len(self.front_team) >= 3:
                 for _ in range(3):
                     temp_stack.push(self.front_team.pop())
-                while not temp_stack.is_empty():
-                    self.front_team.push(temp_stack.pop())
-            elif len(self.front_team) == 2:
-                for _ in range(2):
-                    temp_stack.push(self.front_team.pop())
-                while not temp_stack.is_empty():
-                    self.front_team.push(temp_stack.pop())
-            else:
-                pass
-    
 
 
     def regenerate_team(self) -> None:
@@ -238,7 +240,24 @@ class MonsterTeam:
         This monster cannot be spawned.
         Which monster are you spawning? 1
         """
-        raise NotImplementedError
+        
+        user_monsters = int(input("How many monsters are there? "))
+        print("MONSTERS Are:")
+        monsters = get_all_monsters()
+        for x in range(len(monsters)):
+            if monsters[x].can_be_spawned():
+                print(f"{x+1}: {monsters[x]} [✔️]")
+            else:
+                print(f"{x+1}: {monsters[x]} [❌]")
+        for _ in range(user_monsters):
+            while True:
+                user_monster = int(input("Which monster are you spawning? "))
+                if monsters[user_monster-1].can_be_spawned():
+                    self.add_to_team(monsters[user_monster-1]())
+                    break
+                else:
+                    print("This monster cannot be spawned.")
+        
 
     def select_provided(self, provided_monsters: Optional[ArrayR[type[MonsterBase]]]=None):
         """
@@ -256,13 +275,14 @@ class MonsterTeam:
         
         if provided_monsters is None:
             raise ValueError("provided_monsters cannot be None.")
-        for monster in provided_monsters:
-            self.add_to_team(monster())
+        
+        if self.TeamMode.FRONT:
+            for monster in provided_monsters[::-1]:
+                self.add_to_team(monster())
+                print(monster())
 
-    
-    
-    def __len__(self) -> int:
-        raise NotImplementedError
+        
+        
 
     def choose_action(self, currently_out: MonsterBase, enemy: MonsterBase) -> Battle.Action:
         # This is just a placeholder function that doesn't matter much for testing.
