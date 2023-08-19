@@ -346,6 +346,7 @@ class MonsterTeam:
                 user_monster = int(input("Which monster are you spawning? "))
                 if user_monster < 1 or user_monster > len(monsters):
                     print("Invalid monster.")
+                    continue
                 if monsters[user_monster-1].can_be_spawned():
                     self.provided_monsters[self.provided_monsters_index] = monsters[user_monster-1]
                     self.provided_monsters_index += 1
