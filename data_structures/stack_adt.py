@@ -98,6 +98,17 @@ class ArrayStack(Stack[T]):
         if self.is_empty():
             raise Exception("Stack is empty")
         return self.array[self.length-1]
+    
+    def __str__(self) -> str:
+        """ Returns a string array representation of the stack with monster instances 
+            where the top of the stack is the left most element.
+        """
+        elements = ", ".join(map(str, reversed(self.array[:len(self)])))
+        return "[" + elements + "]"
+   
+
+
+
 
 class TestStack(unittest.TestCase):
     """ Tests for the above class."""

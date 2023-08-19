@@ -63,6 +63,19 @@ class CircularQueue(Queue[T]):
         self.rear = 0
         self.array = ArrayR(max(self.MIN_CAPACITY,max_capacity))
 
+    
+    def __str__(self) -> str:
+        """ Returns a string representation of the queue.
+        """
+        # print(self.array)
+        string = "["
+        for i in range(len(self)):
+            string += str(self.array[(self.front + i) % len(self.array)]) + " "
+        string += "]"
+        return string
+        # print(self.array)
+        # return str(self.array)
+
 
     def append(self, item: T) -> None:
         """ Adds an element to the rear of the queue.
