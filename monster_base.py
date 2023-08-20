@@ -1,5 +1,7 @@
 from __future__ import annotations
 import abc
+import math
+from elements import EffectivenessCalculator
 
 from stats import Stats
 
@@ -93,7 +95,19 @@ class MonsterBase(abc.ABC):
         # Step 2: Apply type effectiveness
         # Step 3: Ceil to int
         # Step 4: Lose HP
+
+        if other.get_defense < self.get_attack / 2:
+            damage = self.get_attack - other.get_defense
+        elif other.get_defence < self.get_attack:
+            damage = self.get_attack * 5/8 - other.get_defense / 4
+        else:
+            damage = self.get_attack / 4
+
+        effective_damage = damage * EffectivenessCalculator.get_effectiveness(self.get_element(), other.get_element())
         
+        effective_damage = math.ceil(effective_damage)
+
+        other.set_hp(other.get_hp() - effective_damage)
 
 
     def ready_to_evolve(self) -> bool:
