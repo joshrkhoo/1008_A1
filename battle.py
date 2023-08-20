@@ -29,7 +29,74 @@ class Battle:
         * remove fainted monsters and retrieve new ones.
         * return the battle result if completed.
         """
-        raise NotImplementedError
+
+        # Check if any team has no more monsters left
+        if len(self.team1) == 0 and len(self.team2) == 0:
+            return Battle.Result.DRAW
+        elif len(self.team1) == 0:
+            return Battle.Result.TEAM2
+        elif len(self.team2) == 0:
+            return Battle.Result.TEAM1
+
+
+        self.turn_number += 1
+        if self.verbosity > 0:
+            print(f"Turn {self.turn_number}")
+
+
+        # Process actions for both teams
+        action1 = self.team1.choose_action(self.out1, self.out2)
+        action2 = self.team2.choose_action(self.out2, self.out1)
+        
+        if action1 == Battle.Action.SWAP:
+            self.out1 = self.team1.retrieve_from_team()            
+        
+        if action1 == Battle.Action.SPECIAL:
+            self.team1.special()
+
+        if action2 == Battle.Action.SWAP:
+            self.out2 = self.team2.retrieve_from_team()
+        
+        if action2 == Battle.Action.SPECIAL:
+            self.team2.special()
+
+        if action1 == Battle.Action.ATTACK and action2 != Battle.Action.ATTACK:
+            self.out1.attack(self.out2)
+
+        if action1 != Battle.Action.ATTACK and action2 == Battle.Action.ATTACK:
+            self.out2.attack(self.out1)
+        
+        if action1 == Battle.Action.ATTACK and action2 == Battle.Action.ATTACK:
+            if self.out1.get_speed() > self.out2.get_speed():
+                self.out1.attack(self.out2)
+                if self.out2.alive():
+                    self.out2.attack(self.out1)
+            elif self.out1.get_speed() < self.out2.get_speed():
+                self.out2.attack(self.out1)
+                if self.out1.alive():
+                    self.out1.attack(self.out2)
+            
+            elif self.out1.get_speed() == self.out2.get_speed():
+                # monsters atack simultaneously
+                self.out1.attack(self.out2)
+                self.out2.attack(self.out1)
+
+        if self.out1.alive():
+            # -1 health
+            self.out1.set_hp(self.out1.get_hp() - 1)
+
+        if self.out2.alive():
+            # -1 health
+            self.out2.set_hp(self.out2.get_hp() - 1)
+
+        if self.out1.alive() and not self.out2.alive():
+            self.out1.level_up()
+            self.out1.evolve()
+        
+        if self.out1.alive() and not self.out2.alive():
+            self.out2.level_up()
+            self.out2.evolve()
+            
 
     def battle(self, team1: MonsterTeam, team2: MonsterTeam) -> Battle.Result:
         if self.verbosity > 0:

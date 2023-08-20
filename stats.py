@@ -81,7 +81,7 @@ class ComplexStats(Stats):
         stack = ArrayStack(len(formula))
 
         for element in formula:
-            print(stack)
+            # print(stack)
             try:
                 stack.push(float(element))          
             except ValueError:
