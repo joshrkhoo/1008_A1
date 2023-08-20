@@ -14,7 +14,7 @@ from data_structures.referential_array import ArrayR
 # for front team
 from data_structures.stack_adt import ArrayStack as Stack
 # for back team
-from data_structures.queue_adt import Queue, CircularQueue
+from data_structures.queue_adt import CircularQueue
 # for optimised team
 from data_structures.array_sorted_list import ArraySortedList
 

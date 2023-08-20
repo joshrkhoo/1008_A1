@@ -1,6 +1,10 @@
 import abc
+import math
+from data_structures.array_sorted_list import ArraySortedList
 
 from data_structures.referential_array import ArrayR
+from data_structures.sorted_list_adt import ListItem
+from data_structures.stack_adt import ArrayStack
 
 class Stats(abc.ABC):
 
@@ -53,16 +57,68 @@ class ComplexStats(Stats):
         max_hp_formula: ArrayR[str],
     ) -> None:
         # TODO: Implement
-        pass
+        self.attack_formula = attack_formula
+        self.defense_formula = defense_formula
+        self.speed_formula = speed_formula
+        self.max_hp_formula = max_hp_formula
+
+
+
 
     def get_attack(self, level: int):
-        raise NotImplementedError
+        return int(self.evaluate_expression(self.attack_formula, level))
 
     def get_defense(self, level: int):
-        raise NotImplementedError
+        return int(self.evaluate_expression(self.defense_formula, level))
 
     def get_speed(self, level: int):
-        raise NotImplementedError
-
+        return int(self.evaluate_expression(self.speed_formula, level))
+    
     def get_max_hp(self, level: int):
-        raise NotImplementedError
+        return int(self.evaluate_expression(self.max_hp_formula, level))
+    
+    def evaluate_expression(self, formula, level: int):
+        stack = ArrayStack(len(formula))
+
+        for element in formula:
+            print(stack)
+            try:
+                stack.push(float(element))          
+            except ValueError:
+                if element == "+":
+                    stack.push(stack.pop() + stack.pop())
+                elif element == "-":
+                    first = stack.pop()
+                    second = stack.pop()
+                    stack.push(second - first)
+                elif element == "*":
+                    first = stack.pop()
+                    second = stack.pop()
+                    stack.push(second * first)
+                elif element == "sqrt":
+                    stack.push(math.sqrt(stack.pop()))
+                elif element == "middle":
+                    # find the median of the numbers in the stack
+                    sortedArray = ArraySortedList(3)
+                    for i in range(3):
+                        val = stack.pop()
+                        sortedArray.add(ListItem(val, val))
+                    stack.push(sortedArray[1].key)
+                elif element == "level":
+                    stack.push(level)
+                elif element == "power":
+                    first = stack.pop()
+                    second = stack.pop()
+                    stack.push(second ** first)
+        return stack.pop()
+
+                
+
+        
+            
+
+
+    
+    
+
+

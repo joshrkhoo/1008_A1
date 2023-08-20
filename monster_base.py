@@ -114,12 +114,6 @@ class MonsterBase(abc.ABC):
         """Whether this monster is ready to evolve. See assignment spec for specific logic."""
 
         return self.get_evolution() != None and self.evolve_ready
-    
-
-        # if self.get_evolution() != None and self.evolve_ready is True:
-        #     return True
-        # else:
-        #     return False
         
 
     def evolve(self) -> MonsterBase:
