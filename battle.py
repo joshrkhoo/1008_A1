@@ -49,16 +49,24 @@ class Battle:
         action2 = self.team2.choose_action(self.out2, self.out1)
         
         if action1 == Battle.Action.SWAP:
-            self.out1 = self.team1.retrieve_from_team()            
+            self.tea1.add_to_team(self.out1)
+            self.out1 = self.team1.retrieve_from_team()
         
         if action1 == Battle.Action.SPECIAL:
+            # If SPECIAL is chosen, the monster is returned to the team, the method .special() is called on the team object, and a monster is retrieved from the team (possibly the same monster).
+            self.team1.add_to_team(self.out1)
             self.team1.special()
+            self.team1.retrieve_from_team()            
+
 
         if action2 == Battle.Action.SWAP:
+            self.team2.add_to_team(self.out2)
             self.out2 = self.team2.retrieve_from_team()
         
         if action2 == Battle.Action.SPECIAL:
+            self.team2.add_to_team(self.out2)
             self.team2.special()
+            self.team2.retrieve_from_team()
 
         if action1 == Battle.Action.ATTACK and action2 != Battle.Action.ATTACK:
             self.out1.attack(self.out2)
@@ -71,7 +79,7 @@ class Battle:
                 self.out1.attack(self.out2)
                 if self.out2.alive():
                     self.out2.attack(self.out1)
-            elif self.out1.get_speed() < self.out2.get_speed():
+            elif self.out2.get_speed() > self.out1.get_speed():
                 self.out2.attack(self.out1)
                 if self.out1.alive():
                     self.out1.attack(self.out2)
@@ -81,21 +89,22 @@ class Battle:
                 self.out1.attack(self.out2)
                 self.out2.attack(self.out1)
 
-        if self.out1.alive():
-            # -1 health
+        if self.out1.alive() and self.out2.alive():
+            # -1 health if both monsters alive
             self.out1.set_hp(self.out1.get_hp() - 1)
-
-        if self.out2.alive():
-            # -1 health
             self.out2.set_hp(self.out2.get_hp() - 1)
+        
+
 
         if self.out1.alive() and not self.out2.alive():
             self.out1.level_up()
-            self.out1.evolve()
+            self.out1 = self.out1.evolve()
+            self.out2 = self.team2.retrieve_from_team()
         
-        if self.out1.alive() and not self.out2.alive():
+        if self.out2.alive() and not self.out1.alive():
             self.out2.level_up()
-            self.out2.evolve()
+            self.out2 = self.out2.evolve()
+            self.out1 = self.team1.retrieve_from_team()
             
 
     def battle(self, team1: MonsterTeam, team2: MonsterTeam) -> Battle.Result:
