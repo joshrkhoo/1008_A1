@@ -52,6 +52,9 @@ class MonsterTeam:
         self.selection_mode = selection_mode
         self.kwargs = kwargs
         self.provided_monsters_index = 0
+
+        # create the provided monsters array (we use this for regenerating the team)
+            # monsters are added to this on initialisation in chosen selection mode
         self.provided_monsters = self.kwargs.get("provided_monsters", ArrayR(self.TEAM_LIMIT))
 
         self.sort_key: self.SortMode = self.kwargs.get("sort_key", None)
@@ -81,6 +84,10 @@ class MonsterTeam:
             return f"Optimised Team: {str(self.optimised_team)}"
            
     def _get_monster_key(self, monster: MonsterBase) -> int:
+        """
+        O(1) complexity best/worst case
+        """
+
         # get keys of monsters for the optimised team (we are useing a sorted list)
         key = None
         if self.sort_key == self.SortMode.HP:
@@ -111,6 +118,10 @@ class MonsterTeam:
             self.optimised_team.add(ListItem(monster, key * self.sort_direction))
 
     def retrieve_from_team(self) -> MonsterBase:
+        """
+        O(1) complexity best/worst case
+        """
+
         if self.team_mode == self.TeamMode.FRONT:
             return self.front_team.pop()
         elif self.team_mode == self.TeamMode.BACK:
@@ -124,6 +135,7 @@ class MonsterTeam:
         ########### FRONT TEAM COMPLEXITY ###########
         """
         Both best and worse case complexity is O(1) as we are only iterating through 3 elements of a queue
+            Therefore the complexity is constant
         """ 
         ########### FRONT TEAM COMPLEXITY ###########    
 
@@ -144,6 +156,12 @@ class MonsterTeam:
             while not temp_queue.is_empty():
                 self.front_team.push(temp_queue.serve())
 
+
+        ########### BACK TEAM COMPLEXITY ###########
+        """
+
+        """ 
+        ########### BACK TEAM COMPLEXITY ###########    
 
         if self.team_mode == self.TeamMode.BACK:
             team_size = len(self.back_team)
@@ -188,6 +206,7 @@ class MonsterTeam:
         self.optimised_team = ArraySortedList(self.TEAM_LIMIT)
 
         # initial sort direction is -1 as we want to sort in descending order as a default
+            # this will occur for regenerating teams as well
         self.sort_direction = - 1
 
         # create provided_monsters
@@ -200,7 +219,7 @@ class MonsterTeam:
         else:
             raise ValueError(f"self.selection_mode {self.selection_mode} not supported.")
         
-        # switch to provided
+        # switch to provided so we can regenerate teams to initial state (this will occur on innitialisation)
         self.selection_mode = self.SelectionMode.PROVIDED
 
     def select_randomly(self):
@@ -219,6 +238,7 @@ class MonsterTeam:
                     cur_index += 1
                     if cur_index == spawner_index:
                         # Spawn this monster
+                        # adding mosters to provided monsters array for regeneration
                         self.provided_monsters[self.provided_monsters_index] = monsters[x]
                         self.provided_monsters_index += 1
                         self.add_to_team(monsters[x]())
@@ -357,6 +377,7 @@ class MonsterTeam:
                     print("Invalid monster.")
                     continue
                 if monsters[user_monster-1].can_be_spawned():
+                    # adding mosters to provided monsters array for regeneration 
                     self.provided_monsters[self.provided_monsters_index] = monsters[user_monster-1]
                     self.provided_monsters_index += 1
                     self.add_to_team(monsters[user_monster-1]())
