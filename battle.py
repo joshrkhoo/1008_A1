@@ -89,18 +89,26 @@ class Battle:
                 self.out1.attack(self.out2)
                 self.out2.attack(self.out1)
 
+
+        # Check if both monsters still alive
         if self.out1.alive() and self.out2.alive():
             # -1 health if both monsters alive
             self.out1.set_hp(self.out1.get_hp() - 1)
             self.out2.set_hp(self.out2.get_hp() - 1)
         
-
-
+        # Check if both monsters fainted
+        if not self.out1.alive() and not self.out2.alive():
+            # both monsters fainted
+            self.out1 = self.team1.retrieve_from_team()
+            self.out2 = self.team2.retrieve_from_team()
+        
+        # Check if monster 1 fainted
         if self.out1.alive() and not self.out2.alive():
             self.out1.level_up()
             self.out1 = self.out1.evolve()
             self.out2 = self.team2.retrieve_from_team()
         
+        # Check if monster 2 fainted
         if self.out2.alive() and not self.out1.alive():
             self.out2.level_up()
             self.out2 = self.out2.evolve()
