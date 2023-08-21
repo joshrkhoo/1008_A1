@@ -56,8 +56,10 @@ class MonsterTeam:
 
         self.sort_key: self.SortMode = self.kwargs.get("sort_key", None)
 
+        # create the team based on the team mode
         self.regenerate_team()
 
+        # Whenever creating a team and the length of the team is greater than the team limit, raise a ValueError
         if len(self) > self.TEAM_LIMIT:
             raise ValueError(f"Team size {len(self)} exceeds limit {self.TEAM_LIMIT}.")
 
@@ -79,7 +81,7 @@ class MonsterTeam:
             return f"Optimised Team: {str(self.optimised_team)}"
            
     def _get_monster_key(self, monster: MonsterBase) -> int:
-        # get keys
+        # get keys of monsters for the optimised team (we are useing a sorted list)
         key = None
         if self.sort_key == self.SortMode.HP:
             key = monster.get_hp()
@@ -103,7 +105,9 @@ class MonsterTeam:
             self.back_team.append(monster)
         elif self.team_mode == self.TeamMode.OPTIMISE:
             key = self._get_monster_key(monster)
-            # add to list
+            # multiply by self.sort_direction in case a monster is added to the team after special() is called
+                # this is because the direction changes when special() is called 
+                    #i.e descending to ascending or vice versa
             self.optimised_team.add(ListItem(monster, key * self.sort_direction))
 
     def retrieve_from_team(self) -> MonsterBase:
@@ -165,8 +169,13 @@ class MonsterTeam:
 
         if self.team_mode == self.TeamMode.OPTIMISE:
             temp_list = ArraySortedList(len(self.optimised_team))
+            # update the sort direction
             self.sort_direction *= -1
             # print(self.sort_direction)
+
+            # iterate through the optimised team and add the monsters with the updated sort direction to the temp list
+                # this will change the sort direction from whatever it is 
+                    # if its descending (-1) it will change to ascending (1)
             for i in range(len(self.optimised_team)):
                 item = self.optimised_team[i]
                 item.key = item.key * -1
