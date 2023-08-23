@@ -87,21 +87,24 @@ class EffectivenessCalculator:
 
 
 
-                                        ##### COMPLEXITY ANALYSIS #####
-        # INCLUDING COST OF COMPARION: 
-            # The time complexity of the map below is O(n * (x * y)) where n is the number of elements in the element_names array, x is the number of enum values in the Element class, and y is the cost of comparison between the two strings in the from_string method 
+                                                        ##### COMPLEXITY ANALYSIS #####
+        """
+        INCLUDING COST OF COMPARION: 
+            The time complexity of the map below is O(n * (x * y)) where n is the number of elements in the element_names array, x is the number of enum values in the Element class, and y is the cost of comparison between the two strings in the from_string method 
         
-        # EXCLUDING COST OF COMPARISON:
-            # The time complexity of the map below is O(n * x) where n is the number of elements in the element_names array and x is the number of enum values in the Element class
+        EXCLUDING COST OF COMPARISON:
+            The time complexity of the map below is O(n * x) where n is the number of elements in the element_names array and x is the number of enum values in the Element class
 
-        # NOTE: The complexity of this map is inefficient however it will only be this complexity once which is better than having to run O(n) time complexity every time we want to get the effectiveness value
+        NOTE: The complexity of this map is inefficient however it will only be this complexity once which is better than having to run O(n) time complexity every time we want to get the effectiveness value
     
-        # This complexity however will occur ONCE AND ONLY ONCE as we are essentially creating a map that maps the index of the element to the index of the effectivenes which allows the get_effectiveness function to be O(1) time complexity (see below for more details)
+        This complexity however will occur ONCE AND ONLY ONCE as we are essentially creating a map that maps the index of the element to the index of the effectivenes which allows the get_effectiveness function to be O(1) time complexity (see below for more details)
 
-                                        ##### COMPLEXITY ANALYSIS #####
+        This will save us from having to loop through the effectiveness_values array every time we want to get the effectiveness value
+        """
+
+                                                        ##### COMPLEXITY ANALYSIS #####
 
 
-        # print(self.element_names, effectiveness_values)
     
         # This is a map that maps the index of the element to the index of the effectiveness value
         # [element enum value] -> [index of element name value in element_names array]
@@ -111,8 +114,8 @@ class EffectivenessCalculator:
             # set the index of the element to the index of the element name in the element_names array
                 # this is done by the from_string method which returns the element enum value
             self.element_index_map[Element.from_string(self.element_names[i]).value-1] = i
-        # print(self.element_index_map)
-
+    
+    
     @classmethod
     def get_effectiveness(cls, type1: Element, type2: Element) -> float:
         """
@@ -130,12 +133,14 @@ class EffectivenessCalculator:
             # This allows us to get the index of the effectiveness value directly without having to loop through the array
 
 
-        ####### COMPLEXITY ANALYSIS #######
-        # The time complexity of this function is O(1) 
-            # This is because we are getting the effectiveness value by index directly
-                # The calculation is done by using mathematical operations which are all O(1) time complexity
-                # There are no loops to iterate through and thus no O(n) time complexity where n would be the number of elements in the array of effectiveness values
-        ####### COMPLEXITY ANALYSIS #######
+                                                     ####### COMPLEXITY ANALYSIS #######
+        """
+        The time complexity of this function is O(1) 
+            This is because we are getting the effectiveness value by index directly
+                The calculation is done by using mathematical operations which are all O(1) time complexity
+                There are no loops to iterate through and thus no O(n) time complexity where n would be the number of elements in the array of effectiveness values
+        """
+                                                    ####### COMPLEXITY ANALYSIS #######
 
 
         
