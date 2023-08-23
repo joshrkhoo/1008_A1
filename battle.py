@@ -30,18 +30,10 @@ class Battle:
         * return the battle result if completed.
         """
 
-        # Check if any team has no more monsters left
-        if len(self.team1) == 0 and len(self.team2) == 0:
-            return Battle.Result.DRAW
-        elif len(self.team1) == 0:
-            return Battle.Result.TEAM2
-        elif len(self.team2) == 0:
-            return Battle.Result.TEAM1
-
-
         self.turn_number += 1
         if self.verbosity > 0:
             print(f"Turn {self.turn_number}")
+
 
 
         # Process actions for both teams
@@ -49,14 +41,14 @@ class Battle:
         action2 = self.team2.choose_action(self.out2, self.out1)
         
         if action1 == Battle.Action.SWAP:
-            self.tea1.add_to_team(self.out1)
+            self.team1.add_to_team(self.out1)
             self.out1 = self.team1.retrieve_from_team()
         
         if action1 == Battle.Action.SPECIAL:
             # If SPECIAL is chosen, the monster is returned to the team, the method .special() is called on the team object, and a monster is retrieved from the team (possibly the same monster).
             self.team1.add_to_team(self.out1)
             self.team1.special()
-            self.team1.retrieve_from_team()            
+            self.out1 = self.team1.retrieve_from_team()            
 
 
         if action2 == Battle.Action.SWAP:
@@ -66,7 +58,7 @@ class Battle:
         if action2 == Battle.Action.SPECIAL:
             self.team2.add_to_team(self.out2)
             self.team2.special()
-            self.team2.retrieve_from_team()
+            self.out2 = self.team2.retrieve_from_team()
 
         if action1 == Battle.Action.ATTACK and action2 != Battle.Action.ATTACK:
             self.out1.attack(self.out2)
@@ -98,21 +90,31 @@ class Battle:
         
         # Check if both monsters fainted
         if not self.out1.alive() and not self.out2.alive():
+            if len(self.team1) == 0 and len(self.team2) == 0:
+                return Battle.Result.DRAW
             # both monsters fainted
             self.out1 = self.team1.retrieve_from_team()
             self.out2 = self.team2.retrieve_from_team()
         
         # Check if monster 1 fainted
-        if self.out1.alive() and not self.out2.alive():
+        elif self.out1.alive() and not self.out2.alive():
+            if len(self.team2) == 0:
+                return Battle.Result.TEAM1
             self.out1.level_up()
             self.out1 = self.out1.evolve()
             self.out2 = self.team2.retrieve_from_team()
         
         # Check if monster 2 fainted
-        if self.out2.alive() and not self.out1.alive():
+        elif self.out2.alive() and not self.out1.alive():
+            if len(self.team1) == 0:
+                return Battle.Result.TEAM2
             self.out2.level_up()
             self.out2 = self.out2.evolve()
             self.out1 = self.team1.retrieve_from_team()
+
+   
+        
+
             
 
     def battle(self, team1: MonsterTeam, team2: MonsterTeam) -> Battle.Result:
@@ -130,8 +132,8 @@ class Battle:
         # Add any postgame logic here.
         return result
 
-if __name__ == "__main__":
-    t1 = MonsterTeam(MonsterTeam.TeamMode.BACK, MonsterTeam.SelectionMode.RANDOM)
-    t2 = MonsterTeam(MonsterTeam.TeamMode.BACK, MonsterTeam.SelectionMode.RANDOM)
-    b = Battle(verbosity=3)
-    print(b.battle(t1, t2))
+# if __name__ == "__main__":
+#     t1 = MonsterTeam(MonsterTeam.TeamMode.BACK, MonsterTeam.SelectionMode.RANDOM)
+#     t2 = MonsterTeam(MonsterTeam.TeamMode.BACK, MonsterTeam.SelectionMode.RANDOM)
+#     b = Battle(verbosity=3)
+#     print(b.battle(t1, t2))
