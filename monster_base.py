@@ -127,7 +127,7 @@ class MonsterBase(abc.ABC):
             difference = self.get_max_hp() - self.get_hp()
             evolved_monster.set_hp(evolved_monster.get_max_hp() - difference)
             return evolved_monster
-
+        return self
     
 
             
