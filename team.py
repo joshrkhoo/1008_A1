@@ -4,6 +4,7 @@ from typing import Optional, TYPE_CHECKING
 
 from base_enum import BaseEnum
 from data_structures.sorted_list_adt import ListItem
+from elements import Element
 from monster_base import MonsterBase
 from random_gen import RandomGen
 from helpers import get_all_monsters
@@ -48,6 +49,15 @@ class MonsterTeam:
     TEAM_LIMIT = 6
 
     def __init__(self, team_mode: TeamMode, selection_mode, **kwargs) -> None:
+        """
+        O(1) complexity best/worst case
+            - initialising the team is O(1) complexity
+            - initialising the provided monsters array is O(1) complexity
+                - assuming the get() method of the array is O(1) complexity
+            - initialising the sort key is O(1) complexity
+
+        """
+        
         self.team_mode = team_mode
         self.selection_mode = selection_mode
         self.kwargs = kwargs
@@ -67,6 +77,12 @@ class MonsterTeam:
             raise ValueError(f"Team size {len(self)} exceeds limit {self.TEAM_LIMIT}.")
 
     def __len__(self) -> int:
+        """
+        Returns the length of the team
+        
+        O(1) complexity best/worst case
+        """
+
         if self.team_mode == self.TeamMode.FRONT:
             return len(self.front_team)
         elif self.team_mode == self.TeamMode.BACK:
@@ -76,12 +92,18 @@ class MonsterTeam:
     
     
     def __str__(self) -> str:
+        """
+        Returns a string representation of the team
+        """
+
         if self.team_mode == self.TeamMode.FRONT:
             return f"Front Team: {str(self.front_team)}"
         elif self.team_mode == self.TeamMode.BACK:
             return f"Back Team: {str(self.back_team)}"
         elif self.team_mode == self.TeamMode.OPTIMISE:
             return f"Optimised Team: {str(self.optimised_team)}"
+        
+
            
     def _get_monster_key(self, monster: MonsterBase) -> int:
         """
@@ -101,10 +123,33 @@ class MonsterTeam:
         elif self.sort_key == self.SortMode.LEVEL:
             key = monster.get_level()
         return key
+    
+    def get_monster_elements(self) -> ArrayR[Element]:
+        # need to get monster elements for the battle tower
+        # this is used for the out of meta method
+
+        element_array = ArrayR(len(self))
+
+        for monster in self.provided_monsters:
+            monster_element = Element.from_string(monster.get_element()).value
+            for i in range(len(element_array)):
+                if element_array[i] is None:
+                    element_array[i] = monster_element
+                    break
+                elif element_array[i] == monster_element:
+                    break
+        return element_array                
+
+
+
 
     def add_to_team(self, monster: MonsterBase):
         """
-        O(1) complexity best/worst case
+        O(1) complexity best/worst case for FRONT and BACK team modes
+            - push() and append() are O(1) complexity
+        
+        O(log(n)) complexity best/worst case for OPTIMISE team mode
+            - add() is O(log(n)) complexity due to binary search
         """
         if self.team_mode == self.TeamMode.FRONT:
             self.front_team.push(monster)
@@ -119,7 +164,12 @@ class MonsterTeam:
 
     def retrieve_from_team(self) -> MonsterBase:
         """
-        O(1) complexity best/worst case
+        O(1) complexity best/worst case for FRONT and BACK team modes
+            - pop() and serve() are O(1) complexity
+        O(n) complexity best/worst case for OPTIMISE team mode
+            - delete_at_index() is O(n) complexity where n is the size of the optimised team 
+                - this is because all the items have to shuffle in the direction the index is deleted
+                    - so if the index is 0, all the items have to shuffle to the left
         """
 
         if self.team_mode == self.TeamMode.FRONT:
@@ -135,7 +185,7 @@ class MonsterTeam:
         ########### FRONT TEAM COMPLEXITY ###########
         """
         Both best and worse case complexity is O(1) as we are only iterating through 3 elements of a queue
-            Therefore the complexity is constant
+            - while loop is O(1) complexity due to is_empty() being constant complexity 
         """ 
         ########### FRONT TEAM COMPLEXITY ###########    
 
@@ -159,7 +209,10 @@ class MonsterTeam:
 
         ########### BACK TEAM COMPLEXITY ###########
         """
-
+        Both best and worse case complexity is O(n) where n is the size of the back team 
+            - All data structure methods are O(1) complexity
+            - Best case would occur when there is only 1 monster in the team
+            - Worst case would occur when there are 6+ monsters in the team
         """ 
         ########### BACK TEAM COMPLEXITY ###########    
 
@@ -173,7 +226,8 @@ class MonsterTeam:
                 # add the first half of the monsters to the temp queue
                     # these monsters will remain in the same order 
                 temp_queue.append(self.back_team.serve())
-            # remove the first half of the monsters from the back team
+
+            # remove the second half of the monsters from the back team
                 # add those monsters to the temp stack so they are reversed when appended back
             while not self.back_team.is_empty():
                 temp_stack.push(self.back_team.serve())
@@ -183,6 +237,14 @@ class MonsterTeam:
             # then add the front half to the back team so they are at the back
             while not temp_queue.is_empty():
                 self.back_team.append(temp_queue.serve())
+
+
+        ########### OPTIMISE TEAM COMPLEXITY ###########
+        """
+        Both best and worse case complexity is O(n * logn) where n is the size of the optimised team 
+            - logn is due to the add() method which uses binary search
+        """ 
+        ########### OPTIMISE TEAM COMPLEXITY ###########   
 
 
         if self.team_mode == self.TeamMode.OPTIMISE:
@@ -199,8 +261,27 @@ class MonsterTeam:
                 item.key = item.key * -1
                 temp_list.add(item)
             self.optimised_team = temp_list
+
+    
  
     def regenerate_team(self) -> None:
+        """
+        Initialises the teams based on the selection mode, then switches to provided mode for rengenerating teams.
+
+                                                    Complexity Analysis:
+        On initialisation:
+            If selection mode is RANDOM:
+                - Best/Worse case complexity = complexity of select_randomly() 
+            If selection mode is MANUAL:
+                - Best/Worse case complexity = O(a + n) where a is the complexity of get_all_monsters() and n is the size of the team that the user chooses (number of monsters in the team)
+            If selection mode is PROVIDED:
+                - Best/Worse case complexity = O(n) where n is the number of monsters in the provided monsters array
+        
+        On regenerating teams:
+            - Best/Worse case complexity = O(n) where n is the number of monsters in the provided monsters array
+            - This is because we populate self.provided_monsters with monsters that are chosen on initialisation no matter the selection mode
+        """
+
         self.front_team = Stack(self.TEAM_LIMIT)
         self.back_team = CircularQueue(self.TEAM_LIMIT)
         self.optimised_team = ArraySortedList(self.TEAM_LIMIT)
@@ -221,6 +302,9 @@ class MonsterTeam:
         
         # switch to provided so we can regenerate teams to initial state (this will occur on innitialisation)
         self.selection_mode = self.SelectionMode.PROVIDED
+
+
+
 
     def select_randomly(self):
         team_size = RandomGen.randint(1, self.TEAM_LIMIT)
@@ -354,6 +438,18 @@ class MonsterTeam:
             Which monster are you spawning? 1
             """
         
+        """
+                                        Complexity Analysis:
+            
+            O(a + n) complexity best/worst case 
+                - n is size of the team that the user chooses (number of monsters in the team)
+                - a is the get_all_monsters() complexity
+                - User inputs are O(1) complexity
+            
+            Complexity would change to O(n) or O(a) depending on whether the size of team that the user chooses is greater than the number of monsters in the game
+
+        """ 
+        
         # Prompting user for team size
         num_of_user_monsters = int(input("How many monsters are there? "))
         while num_of_user_monsters < 1 or num_of_user_monsters > self.TEAM_LIMIT:
@@ -399,11 +495,19 @@ class MonsterTeam:
         Example team if in TeamMode.FRONT:
         [Gustwing Instance, Aquariuma Instance, Flamikin Instance]
         """
+
+        """
+        O(n) complexity best/worst case where n is the number of monsters in the provided monsters array
+            - iterating through the provided monsters array is O(n) complexity
+        """
         
         if provided_monsters is None:
             raise ValueError("provided_monsters cannot be None.")
 
         for monster in provided_monsters:
+            # Random monster makes between 1 and max monsters (rest of array is None)
+            if monster is None:
+                break
             if monster.can_be_spawned() is False:
                 raise ValueError(f"Monster {monster} cannot be spawned.")
             self.add_to_team(monster())
