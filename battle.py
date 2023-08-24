@@ -157,6 +157,10 @@ class Battle:
         if not self.out1.alive() and not self.out2.alive():
             if len(self.team1) == 0 and len(self.team2) == 0:
                 return Battle.Result.DRAW
+            elif len(self.team1) == 0:
+                return Battle.Result.TEAM2
+            elif len(self.team2) == 0:
+                return Battle.Result.TEAM1
             # both monsters fainted
             self.out1 = self.team1.retrieve_from_team()
             self.out2 = self.team2.retrieve_from_team()

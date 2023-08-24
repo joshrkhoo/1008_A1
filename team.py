@@ -3,6 +3,8 @@ from enum import auto
 from typing import Optional, TYPE_CHECKING
 
 from base_enum import BaseEnum
+from data_structures.bset import BSet
+from data_structures.set_adt import Set
 from data_structures.sorted_list_adt import ListItem
 from elements import Element
 from monster_base import MonsterBase
@@ -65,7 +67,7 @@ class MonsterTeam:
 
         # create the provided monsters array (we use this for regenerating the team)
             # monsters are added to this on initialisation in chosen selection mode
-        self.provided_monsters = self.kwargs.get("provided_monsters", ArrayR(self.TEAM_LIMIT))
+        self.provided_monsters: ArrayR[MonsterBase] = self.kwargs.get("provided_monsters", ArrayR(self.TEAM_LIMIT))
 
         self.sort_key: self.SortMode = self.kwargs.get("sort_key", None)
 
@@ -124,21 +126,32 @@ class MonsterTeam:
             key = monster.get_level()
         return key
     
-    def get_monster_elements(self) -> ArrayR[Element]:
+    
+    def get_monster_elements(self, element_set: BSet) -> ArrayR[Element]:
         # need to get monster elements for the battle tower
         # this is used for the out of meta method
 
-        element_array = ArrayR(len(self))
-
+        # for monster in this team, set element_set at index to 1
         for monster in self.provided_monsters:
-            monster_element = Element.from_string(monster.get_element()).value
-            for i in range(len(element_array)):
-                if element_array[i] is None:
-                    element_array[i] = monster_element
-                    break
-                elif element_array[i] == monster_element:
-                    break
-        return element_array                
+            if monster is None: break
+            # print(monster)
+            # get the element enum value of the monster
+            monster_element = Element.from_string(monster.get_element())
+            monster_enum = monster_element.value
+            element_set.add(monster_enum)
+
+        return element_set
+
+        # for monster in self.provided_monsters:
+        #         if monster is None: break
+        #         # print(monster)
+        #     # get the element enum value of the monster
+        #         monster_element = Element.from_string(monster.get_element())
+        #         monster_enum = monster_element.value
+        #         element_array.add(ListItem(monster_element, monster_enum))
+
+        # # print(element_array)
+        # return element_array                
 
 
 
@@ -242,7 +255,8 @@ class MonsterTeam:
 
         ########### OPTIMISE TEAM COMPLEXITY ###########
         """
-        Both best and worse case complexity is O(n * logn) where n is the size of the optimised team 
+        Both best and worse case complexity is O(n * logn)
+            - where n is the size of the optimised team 
             - logn is due to the add() method which uses binary search
         """ 
         ########### OPTIMISE TEAM COMPLEXITY ###########   
@@ -252,7 +266,6 @@ class MonsterTeam:
             temp_list = ArraySortedList(len(self.optimised_team))
             # update the sort direction
             self.sort_direction *= -1
-            # print(self.sort_direction)
 
             # iterate through the optimised team and add the monsters with the updated sort direction to the temp list
                 # this will change the sort direction from whatever it is 

@@ -98,6 +98,7 @@ class TestTower(TestCase):
     @visibility(visibility.VISIBILITY_SHOW)
     @timeout()
     def test_simple_iter(self):
+        # print('running test 5.2')
         # Now give us an overpowered team so we can test the enemy losing lives.
         RandomGen.set_seed(123456789)
         bt = BattleTower(Battle(verbosity=0))
