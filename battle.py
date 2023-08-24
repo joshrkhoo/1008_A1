@@ -36,13 +36,14 @@ class Battle:
         ##########################################################COMPLEXITY ANALYSIS############################################################
         """
         The complexity of this function depends on what runs each turn. 
-        This complexity analysis will go through each possible action and the differences in complexity for specific teams.
+        This complexity with give a general idea of each action and the best/worse case scenario
 
         Important complexities to go through:
-            - attack() method
-                - Complexity of this function is the complexity of get_effectiveness() which is O(n * x) where n is the number of elements in the element_names array and x is the number of enum values in the Element class
-                - All mathematical operations are O(1) complexity as they are basic operations
-                - All other functions used are monster_base() functions which are O(1) complexity
+            - attack() method complexity:
+                - First time: O(n * x) where n is the number of elements in the element_names array and x is the number of enum values in the Element class
+                - Subsequent times: O(1) complexity as the map for element values is already created
+                    - All mathematical operations are O(1) complexity as they are basic operations
+                    - All other functions used are monster_base() functions which are O(1) complexity
             
             - alive(), evolve(), get_speed(), get_hp(), set_hp(), level_up() and any other monster_base () functions are all O(1) complexity
 
@@ -72,10 +73,25 @@ class Battle:
                     - Big O Complexity = O(1) + O(nlogn) = O(nlogn) where n is the number of monsters in the team
         
         3. Attack Action
-            - FRONT team:
-                - 
-        
+            - Any team mode that chooses to attack will result in this function having an attack() complexity as stated at the top of this complexity analysis (This will of course be additional to other complexities in the function)
 
+            - Depending on whether a monster dies or not, what team mode is used, and the number of attacks used, the complexity will vary
+                - This is because retrieve_from_team() and add_to_team() are used in the case that a monster dies, and after the first use of attack the attack() method will be O(1) complexity
+                - So say both teams chose to attack, the complexity of the first team attacking would be O(n * x) + O(1) + the complexity of adding any monsters that fainted back to the team and retrieving new monsters (this is dependent on what team mode is used)
+                    - second team attack would be O(1) and all subsequent attacks after this 
+        
+        Best case complexity: 
+            - Both teams are FRONT or BACK teams and both decide to swap
+                - Big O Complexity = O(1) + O(1) = O(1)
+
+        Worst case complexity:
+            - OPTIMISE and another team mode (doesn't matter), where OPTIMISE chooses to special and the other team chooses to attack
+                - This would be O(n * x) for attack() + O(nlogn) for special() which = O(n * x)
+                - after the first attack it would be O(nlog) if the OPTIMISE chooses to special and the other team chooses to do anything else
+    
+
+
+        
 
 
         """
