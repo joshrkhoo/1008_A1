@@ -21,9 +21,10 @@ class BattleTower:
         self.enemy_teams = None
         self.enemy_teams_lives = None
 
-        self.my_team_elements = ArrayR(len(self.my_team))
-        self.enemy_team_elements = ArrayR(len(self.enemy_teams))
-        self.out_of_meta_elements = ArrayR(len(self.))
+        self.my_team_elements = ArrayR(0)
+        self.enemy_team_elements = ArrayR(0)
+        self.out_of_meta_elements = ArrayR(0)
+
         
 
     def set_my_team(self, team: MonsterTeam) -> None:
@@ -33,10 +34,10 @@ class BattleTower:
 
         self.my_team_elements = self.my_team.get_monster_elements()
         print(self.my_team_elements)
+    
 
     def generate_teams(self, n: int) -> None:
 
-        # print(self.my_team)
         self.enemy_teams = CircularQueue(n)
         self.enemy_teams_lives = CircularQueue(n)
 
@@ -47,15 +48,11 @@ class BattleTower:
             ))
             self.enemy_teams_lives.append(RandomGen.randint(BattleTower.MIN_LIVES, BattleTower.MAX_LIVES))
 
-        # print(self.my_team)
-        # print(self.enemy_teams_lives)
-        # print(self.enemy_teams)
 
     def battles_remaining(self) -> bool:
         # The battle tower ends when there are no enemy teams left, or no lives left for the player team, or both.
         
         # Both have to be true for the battle tower to continue.
-        # print(self.my_team)
         if len(self.enemy_teams) == 0 or self.my_team_lives == 0:
             return False
         else:
@@ -100,11 +97,8 @@ class BattleTower:
 
     def out_of_meta(self) -> ArrayR[Element]:
         #The out of meta method should compute what elements of monsters have been present in the battles in the battle tower so far, but are not present in the upcoming battle.
-
-       raise NotImplementedError 
+        raise NotImplementedError
         
-
-
         
 
     def sort_by_lives(self):

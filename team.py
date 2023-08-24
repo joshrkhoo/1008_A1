@@ -210,9 +210,10 @@ class MonsterTeam:
         ########### BACK TEAM COMPLEXITY ###########
         """
         Both best and worse case complexity is O(n) where n is the size of the back team 
-            - All data structure methods are O(1) complexity
-            - Best case would occur when there is only 1 monster in the team
-            - Worst case would occur when there are 6+ monsters in the team
+            - All methods from stack and circularqueue used in this are O(1) complexity
+            - Looping through the back team is O(n) complexity 
+                - Even though the input size is halved, the complexity is still O(n) as O(n/2) would still represent linear growth 
+                    - Much like how O(3) = O(1)
         """ 
         ########### BACK TEAM COMPLEXITY ###########    
 
@@ -443,11 +444,10 @@ class MonsterTeam:
             
             O(a + n) complexity best/worst case 
                 - n is size of the team that the user chooses (number of monsters in the team)
-                - a is the get_all_monsters() complexity
+                - a is the get_all_monsters() complexity which is given from scaffold 
                 - User inputs are O(1) complexity
+                - this complexity applies to all team modes
             
-            Complexity would change to O(n) or O(a) depending on whether the size of team that the user chooses is greater than the number of monsters in the game
-
         """ 
         
         # Prompting user for team size
@@ -499,6 +499,7 @@ class MonsterTeam:
         """
         O(n) complexity best/worst case where n is the number of monsters in the provided monsters array
             - iterating through the provided monsters array is O(n) complexity
+            - this complexity applies to all team modes
         """
         
         if provided_monsters is None:

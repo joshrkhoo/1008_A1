@@ -95,11 +95,9 @@ class EffectivenessCalculator:
         EXCLUDING COST OF COMPARISON:
             The time complexity of the map below is O(n * x) where n is the number of elements in the element_names array and x is the number of enum values in the Element class
 
-        NOTE: The complexity of this map is inefficient however it will only be this complexity once which is better than having to run O(n) time complexity every time we want to get the effectiveness value
-    
-        This complexity however will occur ONCE AND ONLY ONCE as we are essentially creating a map that maps the index of the element to the index of the effectivenes which allows the get_effectiveness function to be O(1) time complexity (see below for more details)
+        NOTE: The complexity of this map is inefficient however it will only be this complexity once which is better than having to loop through the effectiveness_value array every time we want to get the effectiveness value.
+        Therefore this map overall will be more efficient in the long run, especially when we start running battles due to monsters attacking a lot.
 
-        This will save us from having to loop through the effectiveness_values array every time we want to get the effectiveness value
         """
 
                                                         ##### COMPLEXITY ANALYSIS #####
@@ -138,7 +136,7 @@ class EffectivenessCalculator:
         The time complexity of this function is O(1) 
             This is because we are getting the effectiveness value by index directly
                 The calculation is done by using mathematical operations which are all O(1) time complexity
-                There are no loops to iterate through and thus no O(n) time complexity where n would be the number of elements in the array of effectiveness values
+                There are no loops to iterate through and thus no time complexity that take into account size / length of input
         """
                                                     ####### COMPLEXITY ANALYSIS #######
 
@@ -154,7 +152,6 @@ class EffectivenessCalculator:
 
         # Here we are getting the index of the effectiveness value of type1 attacking type2 in the effectiveness_values array
             # This is done by using the formula: row * num_cols + col
-            # .value returns the index of the element
                 # this method comes from the BaseEnum class which is a child class of Enum 
             # type1.value-1 is used because the index of the enums is 1-indexed and the index of the mapped array is 0-indexed
         index_of_effectiveness_value = instance.element_index_map[type1.value-1] * len(instance.element_names) + instance.element_index_map[type2.value-1]
