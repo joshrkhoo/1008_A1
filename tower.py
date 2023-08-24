@@ -32,6 +32,13 @@ class BattleTower:
         self.previous_elements = BSet()
 
     def set_my_team(self, team: MonsterTeam) -> None:
+        """
+        Set the player's team.
+        Best/Worse case complexity: O(n) / linear time
+            - n is the number of monsters in the team 
+            - we must iterate through all the monsters in the team to get their elements via the get_monster_elements function
+        """
+
         # Generate the team lives here too.
         self.my_team = team
         self.my_team_lives = RandomGen.randint(BattleTower.MIN_LIVES, BattleTower.MAX_LIVES)
@@ -41,6 +48,12 @@ class BattleTower:
     
 
     def generate_teams(self, n: int) -> None:
+        """
+        Generate the enemy teams.
+        Best/Worse case complexity: O(n) / linear time
+            - n is the number of enemy teams to generate
+            - All CircularQueue operations are O(1) complexity
+        """
 
         self.enemy_teams = CircularQueue(n)
         self.enemy_teams_lives = CircularQueue(n)
@@ -54,6 +67,10 @@ class BattleTower:
 
 
     def battles_remaining(self) -> bool:
+        """
+        Check if there are any battles remaining.
+        Best/Worse case complexity: O(1) / constant time
+        """
         # The battle tower ends when there are no enemy teams left, or no lives left for the player team, or both.
         
         # Both have to be true for the battle tower to continue.
@@ -64,6 +81,20 @@ class BattleTower:
 
 
     def next_battle(self) -> tuple[Battle.Result, MonsterTeam, MonsterTeam, int, int]:
+        """
+        Simulate a battle
+
+        Best case complexity: O(n) / linear time
+            - n is the number of elements in the previous_elements bset
+            - we must iterate through all the elements in the previous_elements bset to get their elements via the get_monster_elements function
+            - this is the best time complexity as the best time of battle is O(1) and the best time of get_monster_elements is O(n)
+                - therefore O(n) + O(1) = O(n) 
+
+        Worst case complexity: O(n * x) / exponential time
+            - This complexity will only occur one time (due to the complexity of EffectivenessCalculator)
+            - The worse case after this will be O(nlogn) -> refer to battle.py for indepth analysis
+        """
+
         # Simulate one battle
         # Return the result, my team, enemy team, my team lives, enemy team lives
 
@@ -109,18 +140,23 @@ class BattleTower:
         ######################################## Complexity Analysis ########################################
         """
         Best/Worst case complexity: O(n + m) / linear time 
+            - this is because we iterate through the elements in the previous_elements provided_monsters and the next_battle_elements provided_monsters for the get_monster_elements function
             - n is the number of elements in the previous_elements bset
             - m is the number of elements in the next_battle_elements bset
                 - we must iterate through both these sets every time this function is run 
+            
+            - all Bset and ArrayR operations are O(1) complexity
         
         """
         ######################################## Complexity Analysis ########################################
 
 
-
+        # create bset of size length of element enum (all elements)
         next_battle_elements = BSet()
+        # get the monster elements of the next enemy team
         next_enemy_team = self.enemy_teams.peek()
         next_enemy_team.get_monster_elements(next_battle_elements)
+        # get the monster elements of my team
         self.my_team.get_monster_elements(next_battle_elements)
 
 

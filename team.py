@@ -127,11 +127,14 @@ class MonsterTeam:
         return key
     
     
-    def get_monster_elements(self, element_set: BSet) -> ArrayR[Element]:
-        # need to get monster elements for the battle tower
-        # this is used for the out of meta method
+    def get_monster_elements(self, element_set: BSet) -> BSet:
+        """
+        This function gets the element enum values of monsters 
 
-        # for monster in this team, set element_set at index to 1
+        O(n) complexity best/worst case where n is the size of the team
+        """
+
+        # for monster in this team, set element_set at index 1
         for monster in self.provided_monsters:
             if monster is None: break
             # print(monster)

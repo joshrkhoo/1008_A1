@@ -47,8 +47,15 @@ class Battle:
             
             - alive(), evolve(), get_speed(), get_hp(), set_hp(), level_up() and any other monster_base () functions are all O(1) complexity
 
-        
+        Best case complexity: 
+            - Both teams are FRONT or BACK teams and both decide to swap
+                - Big O Complexity = O(1) + O(1) = O(1)
 
+        Worst case complexity:
+            - OPTIMISE and another team mode (doesn't matter), where OPTIMISE chooses to special and the other team chooses to attack
+                - This would be O(n * x) for attack() + O(nlogn) for special() which = O(n * x)
+                - after the first attack it would be O(nlog) if the OPTIMISE chooses to special and the other team chooses to do anything else
+    
 
         1. Swap Action
             - If a FRONT team chooses to swap the complexity is O(1) as push() and pop() methods are O(1) complexity
@@ -80,15 +87,7 @@ class Battle:
                 - So say both teams chose to attack, the complexity of the first team attacking would be O(n * x) + O(1) + the complexity of adding any monsters that fainted back to the team and retrieving new monsters (this is dependent on what team mode is used)
                     - second team attack would be O(1) and all subsequent attacks after this 
         
-        Best case complexity: 
-            - Both teams are FRONT or BACK teams and both decide to swap
-                - Big O Complexity = O(1) + O(1) = O(1)
 
-        Worst case complexity:
-            - OPTIMISE and another team mode (doesn't matter), where OPTIMISE chooses to special and the other team chooses to attack
-                - This would be O(n * x) for attack() + O(nlogn) for special() which = O(n * x)
-                - after the first attack it would be O(nlog) if the OPTIMISE chooses to special and the other team chooses to do anything else
-    
 
 
         
